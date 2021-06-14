@@ -3,16 +3,18 @@ package io.springsecurity.springsecurityjwt.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.springsecurity.springsecurityjwt.user.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+@Service
 public class JwtUtil {
 
-    private String SECRET_KEY = "secretKey";
+    private String SECRET_KEY = "secretKeyIsGivenAsIsAndIsMoreOftenUsedHereToSecureMore";
 
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -35,7 +37,7 @@ public class JwtUtil {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(User user) {
+    public String generateToken(UserDetails user) {
         Map<String, String> claims = new HashMap<>();
         return createToken(claims, user.getUsername());
     }
@@ -46,7 +48,7 @@ public class JwtUtil {
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
     }
 
-    public Boolean validateToken(String token, User user) {
+    public Boolean validateToken(String token, UserDetails user) {
         final String username = extractUserName(token);
         return (username.equals(user.getUsername()) && !isTokenExpired(token));
     }
